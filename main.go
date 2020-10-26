@@ -150,7 +150,7 @@ func fetchListing(loc, after string, f func(string, string, *fastjson.Value) (bo
 
 func fetch(method, urlS string) (*http.Response, error) {
 	req, _ := http.NewRequest(method, urlS, nil)
-	req.Header.Add("user-agent", "linux:eu.the-eye.reddit-dl:v1.0.0 (by /u/nektro)")
+	req.Header.Add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36")
 	res, _ := http.DefaultClient.Do(req)
 	return res, nil
 }
@@ -181,6 +181,22 @@ func downloadPost(t, name string, id string, urlS string, dir string) {
 
 	if urlO.Host == "old.reddit.com" {
 		return
+	}
+	// download gifv video
+	if urlO.Host == "i.imgur.com" && strings.HasSuffix(urlS, "gifv") {
+		res, _ := fetch(http.MethodGet, urlS)
+		doc, _ := goquery.NewDocumentFromResponse(res)
+		doc.Find("meta").EachWithBreak(func(_ int, el *goquery.Selection) bool {
+			if prop, _ := el.Attr("property"); prop == "og:video:secure_url" {
+				cont, _ := el.Attr("content")
+				url1, err := url.Parse(cont)
+				if err == nil {
+					links = append(links, [2]string{cont, urlO.Host + "_" + url1.Path[1:]})
+				}
+				return false
+			}
+			return true
+		})
 	}
 	if urlO.Host == "i.redd.it" || urlO.Host == "i.imgur.com" || (urlO.Host == "imgur.com" && !strings.Contains(ct, "text/html")) {
 		links = append(links, [2]string{urlS, urlO.Host + "_" + urlO.Path[1:]})
