@@ -27,6 +27,7 @@ var (
 	dbC     dbstorage.Database
 	doComms bool
 	noPics  bool
+	noGifv  bool
 	noDmDir bool
 	wg      = new(sync.WaitGroup)
 )
@@ -45,6 +46,7 @@ func main() {
 	flagConcurr := pflag.Int("concurrency", 10, "Maximum number of simultaneous downloads.")
 	pflag.BoolVar(&doComms, "do-comments", false, "Enable this flag to save post comments.")
 	pflag.BoolVar(&noPics, "no-pics", false, "Enable this flag to disable the saving of post attachments.")
+	pflag.BoolVar(&noGifv, "no-gifv", false, "Enable this flag to disable the saving of post attachments (gifv videos).")
 	pflag.BoolVar(&noDmDir, "no-domain-dir", false, "Enable this flag to disable adding 'reddit.com' to --save-dir.")
 
 	pflag.Parse()
@@ -183,7 +185,7 @@ func downloadPost(t, name string, id string, urlS string, dir string) {
 		return
 	}
 	// download gifv video
-	if urlO.Host == "i.imgur.com" && strings.HasSuffix(urlS, "gifv") {
+	if !noGifv && urlO.Host == "i.imgur.com" && strings.HasSuffix(urlS, "gifv") {
 		res, _ := fetch(http.MethodGet, urlS)
 		doc, _ := goquery.NewDocumentFromResponse(res)
 		doc.Find("meta").EachWithBreak(func(_ int, el *goquery.Selection) bool {

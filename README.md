@@ -20,6 +20,7 @@ https://github.com/The-Eye-Team/reddit-dl/releases/latest
     --mbpp-bar-gradient Enabling this will make the bar gradient from red/yellow/green.
     --no-domain-dir     Enable this flag to disable adding 'reddit.com' to --save-dir.
     --no-pics           Enable this flag to disable the saving of post attachments.
+    --no-gifv           Enable this flag to disable the saving of post attachments (gifv videos).
     --save-dir string   Path to a directory to save to.
 -r, --subreddit string  The name of a subreddit to archive. (ex. AskReddit, unixporn, CasualConversation, etc.)
 -u, --user string       The name of a user to archive. (ex. spez, PoppinKREAM, Shitty_Watercolour, etc.)
